@@ -29,11 +29,13 @@ dialog input{display:block;width:260px;margin:6px 0;padding:6px;font:inherit}
 select{font:inherit;border:1px solid var(--acc);background:var(--paper);color:var(--ink);border-radius:6px;padding:5px 8px;font-weight:600}
 td.lk{background:rgba(27,127,92,.16)}td.ft{background:rgba(2,132,199,.16)}td.df{background:rgba(124,58,237,.18)}td.ov{background:rgba(214,140,0,.22)}.pv{display:block;color:var(--mut);font-size:11px;font-weight:400}
 #lg{font-size:12.5px;color:var(--mut);margin:0 0 8px}#lg i{display:inline-block;width:11px;height:11px;vertical-align:-1px;margin:0 3px 0 8px;border:1px solid var(--rule)}
-@media print{#lg{display:none}}
+@page port{size:A4 portrait;margin:8mm}@page land{size:A4 landscape;margin:8mm}
+body.pm .sheet{display:block!important}
+@media print{#lg{display:none}.sheet{padding:0!important;overflow:visible!important;break-inside:avoid;margin:0!important}.sheet:first-of-type{break-before:auto}.sheet[data-skip]{display:none!important}.sheet h2{margin:0 0 4px}}
 </style></head><body>
 <header><h1>Taldangra Fulmati High School (H.S) · Audit Report <span id="yl"></span></h1><select id="yr" aria-label="Report year"><option>2024-25</option><option>2025-26</option></select><span id="st"></span>
 <button id="li" hidden>Sign in</button><button id="ed" hidden>Edit</button><button id="sv" class="p" hidden>Save online</button>
-<button id="fx" class="p" hidden>Fetch 2025-26 data</button><button id="cp" hidden>Compare with 2024-25</button><button onclick="print()">Print</button><button id="ex">Export JSON</button><button id="cf">Firebase setup</button></header>
+<button id="fx" class="p" hidden>Fetch 2025-26 data</button><button id="cp" hidden>Compare with 2024-25</button><select id="or" title="Print orientation"><option value="auto">Auto A4 (fit)</option><option value="p">A4 Portrait</option><option value="l">A4 Landscape</option></select><select id="ps" title="What to print"><option value="all">All sheets</option><option value="one">This sheet only</option></select><button id="pb" class="p">Print</button><button id="ex">Export JSON</button><button id="cf">Firebase setup</button></header>
 <nav id="nav"></nav>
 <main><div id="chk"></div><p id="hint" style="color:var(--mut);font-size:13px"></p><p id="lg" hidden>Cell colours in 2025-26:<i style="background:rgba(27,127,92,.3)"></i>linked from 2024-25 (locked; double-click in Edit mode to override)<i style="background:rgba(214,140,0,.4)"></i>manually overridden<i style="background:rgba(2,132,199,.35)"></i>fetched from Salary / PF / Cash portals<i style="background:rgba(124,58,237,.35)"></i>default copied from 2024-25 (other entries: confirm or edit)<br>Opening balances, previous-year figures and PF opening balances are linked. Totals and all current-year amounts are entered manually; the checks above flag any mismatch.</p><div id="out"></div></main>
 <dialog id="dl"><form method="dialog" id="fm"><b id="dt"></b><div id="df"></div><button class="p">OK</button> <button value="x" formnovalidate>Cancel</button></form></dialog>
@@ -259,6 +261,18 @@ async function fetchAll(){
  dirty[Y]=true;D=DATA[Y];show(cur);checks();hdr();st('Fetched — unsaved (blue = fetched, purple = default from 2024-25)');
  $('dt').textContent='Fetch report';$('df').innerHTML='<ul style="max-width:560px;max-height:55vh;overflow:auto;font-size:13px;padding-left:18px">'+rep.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';$('dl').onclose=null;$('dl').showModal()}
 $('fx').onclick=fetchAll;
+
+/* ===== Print: fit every sheet on one A4 page (portrait / landscape / auto) ===== */
+function doPrint(){const om=$('or').value,one=$('ps').value==='one';document.body.classList.add('pm');
+ document.querySelectorAll('.sheet').forEach((sec,j)=>{if(!sec.querySelector('table'))sec.insertAdjacentHTML('beforeend',tbl(j));
+  if(one&&j!=cur)sec.setAttribute('data-skip','1');else sec.removeAttribute('data-skip');
+  const t=sec.querySelector('table');t.style.zoom=1;const w=t.offsetWidth,h=t.offsetHeight+34,
+   sc=(W,H)=>Math.min(1,W/w,H/h),P=sc(733,1000),L=sc(1062,690);
+  const o=om==='p'?'p':om==='l'?'l':(L>P*1.02?'l':'p');
+  sec.style.page=o==='l'?'land':'port';t.style.zoom=(o==='l'?L:P)*.98});
+ setTimeout(()=>print(),50)}
+$('pb').onclick=doPrint;
+window.onafterprint=()=>{document.body.classList.remove('pm');show(cur)};
 
 hdr();show(0);checks();ui();
 </script></body></html>
