@@ -65,7 +65,7 @@ main{max-width:1500px;margin:18px auto 40px;padding:0 14px}
  #out .sheet h2{display:none}tr{break-inside:avoid}}
 </style></head><body>
 <header><div class="hr"><h1>Taldangra Fulmati High School (H.S) · Audit Report <span id="yl"></span></h1><select id="yr" aria-label="Report year"><option>2024-25</option><option>2025-26</option></select><span id="st"></span></div>
-<div class="hr"><button id="li" hidden>Sign in</button><button id="ed" hidden>Edit</button><button id="sv" class="p" hidden>Save online</button><button id="fx" class="p" hidden>Fetch 2025-26 data</button><button id="cp" hidden>Compare with 2024-25</button><span class="sp"></span>
+<div class="hr"><button id="li" hidden>Sign in</button><button id="lo" hidden>Sign out</button><button id="ed" hidden>Edit</button><button id="sv" class="p" hidden>Save online</button><button id="fx" class="p" hidden>Fetch 2025-26 data</button><button id="cp" hidden>Compare with 2024-25</button><span class="sp"></span>
 <label class="g gz">View <select id="zm" title="Screen zoom"><option value="fit">Fit width</option><option value="1">100%</option><option value="1.25">125%</option><option value="1.5">150%</option></select></label>
 <span class="g">Print <select id="or" title="Print orientation"><option value="auto">Auto A4 (best fit)</option><option value="p">A4 Portrait</option><option value="l">A4 Landscape</option></select><select id="ps" title="What to print"><option value="all">All sheets</option><option value="one">This sheet only</option></select><button id="pb" class="p">Print</button></span>
 <span class="g"><button id="ex">Export JSON</button><button id="cf">Firebase setup</button></span></div></header>
@@ -150,7 +150,7 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 function st(t){$('st').textContent=t}
 function hdr(){$('yl').textContent=Y;document.title='TFHS Audit Report '+Y;$('yr').value=Y;$('cp').hidden=Y!=="2025-26";$('cp').textContent=cmp?'Hide 2024-25 figures':'Compare with 2024-25';
  $('lg').hidden=Y!=="2025-26";$('fx').hidden=Y!=="2025-26"}
-function ui(){$('ed').hidden=!(user||!db);$('ed').textContent=edit?'Stop editing':'Edit';$('li').hidden=!db||!!user;$('li').textContent='Sign in';$('sv').hidden=!(db&&user&&edit);
+function ui(){$('ed').hidden=!(user||!db);$('ed').textContent=edit?'Stop editing':'Edit';$('li').hidden=!db||!!user;$('lo').hidden=!(db&&user);$('lo').textContent='Sign out ('+(user&&user.email||'')+')';$('li').textContent='Sign in';$('sv').hidden=!(db&&user&&edit);
  $('hint').textContent=db?(user?'Signed in as '+user.email:'Read-only view. Sign in to edit and save.'):'Firebase not configured: edits stay in this browser. Use Firebase setup, or paste your config into FB_FILE.'}
 document.addEventListener('input',e=>{const t=e.target;if(!t.dataset||t.dataset.r===undefined)return;const R=t.dataset.r,C=t.dataset.c;if(linked(cur,R,C)&&!OV.has(key(cur,R,C)))return;
  const o=D[cur].r[R][C];let v=t.textContent;
@@ -164,6 +164,7 @@ document.addEventListener('dblclick',e=>{const t=e.target.closest&&e.target.clos
 function ask(title,fields,ok){$('dt').textContent=title;$('df').innerHTML=fields.map(f=>'<input id="f_'+f[0]+'" placeholder="'+f[1]+'" type="'+(f[2]||'text')+'">').join('');
  $('dl').onclose=()=>{if($('dl').returnValue!=='x')ok(Object.fromEntries(fields.map(f=>[f[0],$('f_'+f[0]).value])))};$('dl').showModal()}
 $('li').onclick=()=>ask('Sign in to edit',[['e','Email','email'],['p','Password','password']],v=>auth.signInWithEmailAndPassword(v.e,v.p).catch(x=>alert(x.message)));
+$('lo').onclick=()=>auth.signOut();
 $('ed').onclick=()=>{edit=!edit;show(cur);ui()};
 $('cp').onclick=()=>{cmp=!cmp;hdr();show(cur)};
 $('yr').onchange=()=>{Y=$('yr').value;D=DATA[Y];edit=false;location.hash=Y;hdr();show(cur);checks();ui();st(dirty[Y]?'Unsaved changes':(db?'':'Local copy'))};
