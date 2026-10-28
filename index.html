@@ -19,9 +19,6 @@ main{max-width:1180px;margin:14px auto;padding:0 12px}
 table{border-collapse:collapse;table-layout:fixed}td{padding:2px 5px;vertical-align:top;font-size:13.5px;overflow-wrap:anywhere}
 td.n{text-align:right;font-variant-numeric:tabular-nums;border-bottom:1px solid var(--rule)}
 .ed td[contenteditable]{background:var(--edit);outline:1px dashed var(--rule)}.ed td:focus{outline:2px solid var(--acc)}
-#chk{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px}
-#chk div{border-left:4px solid var(--ok);padding:4px 8px;background:var(--paper);font-size:13.5px}
-#chk .x{border-color:var(--bad)}#chk b{font-variant-numeric:tabular-nums}
 dialog{border:1px solid var(--rule);background:var(--paper);color:var(--ink);border-radius:8px}
 dialog input{display:block;width:260px;margin:6px 0;padding:6px;font:inherit}
 @media print{header,nav,#chk,#hint{display:none}.sheet{display:block!important;break-before:page;border:0}body{background:#fff;color:#000}}
@@ -32,12 +29,48 @@ td.lk{background:rgba(27,127,92,.16)}td.ft{background:rgba(2,132,199,.16)}td.df{
 @page port{size:A4 portrait;margin:8mm}@page land{size:A4 landscape;margin:8mm}
 body.pm .sheet{display:block!important}
 @media print{#lg{display:none}.sheet{padding:0!important;overflow:visible!important;break-inside:avoid;margin:0!important}.sheet:first-of-type{break-before:auto}.sheet[data-skip]{display:none!important}.sheet h2{margin:0 0 4px}}
+
+/* ===== v2 layout: toolbar, sticky tabs, paper pages, checks tab, better print ===== */
+header{position:static;display:block;padding:12px 18px 10px}
+.hr{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.hr+.hr{margin-top:10px}
+.hr h1{flex:1 1 260px}.sp{flex:1}
+.g{display:flex;gap:6px;align-items:center;padding-left:12px;border-left:1px solid var(--rule);color:var(--mut);font-size:13px}
+#st{font-size:13px;color:var(--mut)}
+nav{position:sticky;top:0;z-index:6;gap:2px;padding:6px 14px 0;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+nav button{border:0;border-bottom:3px solid transparent;border-radius:6px 6px 0 0;padding:8px 13px;background:transparent;color:var(--mut)}
+nav button:hover{background:var(--desk)}
+nav button.on{border-bottom-color:var(--acc);color:var(--acc);font-weight:600;background:var(--desk)}
+nav button#ckb{margin-left:auto;color:var(--ink);font-weight:600}
+.bd{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;font-size:11.5px;line-height:18px;margin-left:6px;background:var(--ok);color:#fff;text-align:center}.bd.x{background:var(--bad)}
+main{max-width:1500px;margin:18px auto 40px;padding:0 14px}
+#hint{margin:0 0 10px}
+#lg{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:10px 14px;line-height:1.9;max-width:1180px;margin:0 auto 16px}
+#out .sheet{width:fit-content;max-width:100%;margin:0 auto 26px;padding:28px 32px;border:1px solid var(--rule);border-radius:3px;box-shadow:0 1px 2px rgba(0,0,0,.10),0 10px 28px rgba(0,0,0,.10)}
+#out .sheet h2{font:600 11.5px "Source Sans 3",system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin:0 0 14px;padding-bottom:8px;border-bottom:1px solid var(--rule)}
+#ckp{display:none;max-width:1180px;margin:0 auto}body.ckm #ckp{display:block}body.ckm #out,body.ckm #lg,body.ckm #ed,body.ckm #cp,body.ckm #zm,body.ckm .gz{display:none!important}
+.cs{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 20px;border-radius:10px;background:var(--paper);border:1px solid var(--rule);border-left:6px solid var(--ok)}
+.cs.bad{border-left-color:var(--bad)}
+.cs .big{font:600 21px "Source Serif 4",Georgia,serif}.cs.good .big{color:var(--ok)}.cs.bad .big{color:var(--bad)}
+.cs .sub{color:var(--mut);font-size:14px;flex:1 1 200px}.of{font-size:14px;cursor:pointer;display:flex;gap:7px;align-items:center}
+#chk h3{font:600 12px "Source Sans 3",system-ui,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);margin:24px 2px 10px}
+.cg{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px}
+.ck{display:flex;gap:10px;padding:12px 14px;background:var(--paper);border:1px solid var(--rule);border-left:4px solid var(--ok);border-radius:6px;cursor:pointer}
+.ck:hover{box-shadow:0 3px 10px rgba(0,0,0,.14)}
+.ck.x{border-left-color:var(--bad);background:color-mix(in srgb,var(--bad) 7%,var(--paper))}
+.ci{font-size:16px;line-height:1.3;color:var(--ok)}.ck.x .ci{color:var(--bad)}
+.cl{font-size:14.5px;line-height:1.35}.cv{margin-top:4px;font-size:18px;font-variant-numeric:tabular-nums}
+.vs,.nt,.dd{font-size:12.5px;color:var(--mut)}.nt{margin-top:2px}
+@media print{header,nav,#ckp,#hint,#lg{display:none!important}
+ #out .sheet{width:auto!important;max-width:none!important;box-shadow:none!important;border:0!important;border-radius:0!important;padding:0!important;margin:0!important}
+ #out .sheet h2{display:none}tr{break-inside:avoid}}
 </style></head><body>
-<header><h1>Taldangra Fulmati High School (H.S) · Audit Report <span id="yl"></span></h1><select id="yr" aria-label="Report year"><option>2024-25</option><option>2025-26</option></select><span id="st"></span>
-<button id="li" hidden>Sign in</button><button id="ed" hidden>Edit</button><button id="sv" class="p" hidden>Save online</button>
-<button id="fx" class="p" hidden>Fetch 2025-26 data</button><button id="cp" hidden>Compare with 2024-25</button><select id="or" title="Print orientation"><option value="auto">Auto A4 (fit)</option><option value="p">A4 Portrait</option><option value="l">A4 Landscape</option></select><select id="ps" title="What to print"><option value="all">All sheets</option><option value="one">This sheet only</option></select><button id="pb" class="p">Print</button><button id="ex">Export JSON</button><button id="cf">Firebase setup</button></header>
+<header><div class="hr"><h1>Taldangra Fulmati High School (H.S) · Audit Report <span id="yl"></span></h1><select id="yr" aria-label="Report year"><option>2024-25</option><option>2025-26</option></select><span id="st"></span></div>
+<div class="hr"><button id="li" hidden>Sign in</button><button id="ed" hidden>Edit</button><button id="sv" class="p" hidden>Save online</button><button id="fx" class="p" hidden>Fetch 2025-26 data</button><button id="cp" hidden>Compare with 2024-25</button><span class="sp"></span>
+<label class="g gz">View <select id="zm" title="Screen zoom"><option value="fit">Fit width</option><option value="1">100%</option><option value="1.25">125%</option><option value="1.5">150%</option></select></label>
+<span class="g">Print <select id="or" title="Print orientation"><option value="auto">Auto A4 (best fit)</option><option value="p">A4 Portrait</option><option value="l">A4 Landscape</option></select><select id="ps" title="What to print"><option value="all">All sheets</option><option value="one">This sheet only</option></select><button id="pb" class="p">Print</button></span>
+<span class="g"><button id="ex">Export JSON</button><button id="cf">Firebase setup</button></span></div></header>
 <nav id="nav"></nav>
-<main><div id="chk"></div><p id="hint" style="color:var(--mut);font-size:13px"></p><p id="lg" hidden>Cell colours in 2025-26:<i style="background:rgba(27,127,92,.3)"></i>linked from 2024-25 (locked; double-click in Edit mode to override)<i style="background:rgba(214,140,0,.4)"></i>manually overridden<i style="background:rgba(2,132,199,.35)"></i>fetched from Salary / PF / Cash portals<i style="background:rgba(124,58,237,.35)"></i>default copied from 2024-25 (other entries: confirm or edit)<br>Opening balances, previous-year figures and PF opening balances are linked. Totals and all current-year amounts are entered manually; the checks above flag any mismatch.</p><div id="out"></div></main>
+<main><div id="ckp"><div id="cks"></div><div id="chk"></div></div><p id="hint" style="color:var(--mut);font-size:13px"></p><p id="lg" hidden>Cell colours in 2025-26:<i style="background:rgba(27,127,92,.3)"></i>linked from 2024-25 (locked; double-click in Edit mode to override)<i style="background:rgba(214,140,0,.4)"></i>manually overridden<i style="background:rgba(2,132,199,.35)"></i>fetched from Salary / PF / Cash portals<i style="background:rgba(124,58,237,.35)"></i>default copied from 2024-25 (other entries: confirm or edit)<br>Opening balances, previous-year figures and PF opening balances are linked. Totals and all current-year amounts are entered manually; the Checks tab flags any mismatch.</p><div id="out"></div></main>
 <dialog id="dl"><form method="dialog" id="fm"><b id="dt"></b><div id="df"></div><button class="p">OK</button> <button value="x" formnovalidate>Cancel</button></form></dialog>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -92,15 +125,28 @@ function tbl(si){const s=D[si],mg={},sk=new Set();
    c+=cs-1;}
   h+='</tr>';}
  return h+'</table>'}
-function show(i){cur=i;[...$('nav').children].forEach((b,j)=>b.classList.toggle('on',j==i));
- $('out').className=edit?'ed':'';$('out').innerHTML=D.map((s,j)=>'<section class=sheet data-i='+j+(j==i?'':' style="display:none"')+'><h2>'+esc(s.n)+'</h2>'+(j==i||matchMedia('print').matches?tbl(j):'')+'</section>').join('')}
-function checks(){const yy=Y.slice(-2),py=String(+yy-1);let h=CHECKS.map(([l,a,b])=>{const x=a.reduce((t,c)=>t+at(c),0),y=b.reduce((t,c)=>t+at(c),0),ok=Math.abs(x-y)<.005;
- l=l.split('Jan-24').join('Jan-'+py);
- return '<div class="'+(ok?'':'x')+'">'+(ok?'✔ ':'✘ ')+esc(l)+'<br><b>'+fmt(x)+'</b>'+(ok?'':' vs <b>'+fmt(y)+'</b>')+'</div>'}).join('');
- if(Y==="2025-26"){const g={};LINKS.forEach(l=>{const k=l[0];(g[k]=g[k]||[0,0,0]);g[k][0]+=at([l[1],l[2],l[3]],DATA["2025-26"]);g[k][1]+=at([l[4],l[5],l[6]],DATA["2024-25"]);if(OV.has(key(l[1],l[2],l[3])))g[k][2]++});
-  h+=Object.keys(g).map(k=>{const ok=Math.abs(g[k][0]-g[k][1])<.005;return '<div class="'+(ok?'':'x')+'">'+(ok?'⛓ ':'✘ ')+'Carry-forward: '+esc(k)+'<br><b>'+fmt(g[k][0])+'</b>'+(ok?'':' vs 2024-25 <b>'+fmt(g[k][1])+'</b> ('+g[k][2]+' cell(s) overridden)')+'</div>'}).join('')}
- if(Y==="2025-26")h+=FX.map(([l,x,y])=>{const ok=Math.abs(x-y)<.5;return '<div class="'+(ok?'':'x')+'">'+(ok?'✔ ':'✘ ')+esc(l)+'<br><b>'+fmt(x)+'</b>'+(ok?'':' vs <b>'+fmt(y)+'</b>')+'</div>'}).join('');
- $('chk').innerHTML=h}
+function show(i){cur=i;const ck=i>=D.length;document.body.classList.toggle('ckm',ck);[...$('nav').children].forEach((b,j)=>b.classList.toggle('on',j==i));
+ $('out').className=edit?'ed':'';$('out').innerHTML=D.map((s,j)=>'<section class=sheet data-i='+j+(j==i&&!ck?'':' style="display:none"')+'><h2>'+esc(s.n)+'</h2>'+(j==i&&!ck||matchMedia('print').matches?tbl(j):'')+'</section>').join('');fit()}
+function go(i){show(i);if(window.scrollY>0)window.scrollTo(0,0)}
+function fit(){const t=document.querySelector('#out .sheet:not([style*="display"]) table');if(!t)return;t.style.zoom=1;const z=$('zm').value;
+ if(z==='fit'){const w=t.offsetWidth,a=$('out').clientWidth-68;t.style.zoom=Math.max(.55,Math.min(1.25,a/w))}else t.style.zoom=+z}
+$('zm').onchange=fit;window.addEventListener('resize',fit);
+let onlyBad=false;
+function checks(){const yy=Y.slice(-2),py=String(+yy-1),Gs=[];
+ Gs.push(['Form-to-form reconciliation',CHECKS.map(([l,a,b])=>{const x=a.reduce((t,c)=>t+at(c),0),y=b.reduce((t,c)=>t+at(c),0);return{l:l.split('Jan-24').join('Jan-'+py),x,y,ok:Math.abs(x-y)<.005,go:a[0][0]}})]);
+ if(Y==="2025-26"){const g={};LINKS.forEach(l=>{const k=l[0];(g[k]=g[k]||[0,0,0,l[1]]);g[k][0]+=at([l[1],l[2],l[3]],DATA["2025-26"]);g[k][1]+=at([l[4],l[5],l[6]],DATA["2024-25"]);if(OV.has(key(l[1],l[2],l[3])))g[k][2]++});
+  Gs.push(['Carry-forward from 2024-25',Object.keys(g).map(k=>({l:k,x:g[k][0],y:g[k][1],ok:Math.abs(g[k][0]-g[k][1])<.005,ic:'⛓',go:g[k][3],note:g[k][2]?g[k][2]+' cell(s) manually overridden':'',vl:'2024-25'}))]);
+  if(FX.length)Gs.push(['Fetched-data cross-checks',FX.map(([l,x,y])=>({l,x,y,ok:Math.abs(x-y)<.5}))])}
+ let tot=0,bad=0;Gs.forEach(([,a])=>a.forEach(c=>{tot++;if(!c.ok)bad++}));
+ const dd=d=>(Math.round(d*100)/100).toLocaleString('en-IN',{maximumFractionDigits:2});
+ const card=c=>'<div class="ck '+(c.ok?'ok':'x')+'"'+(c.go!==undefined?' data-go='+c.go+' title="Open this sheet"':'')+'><span class=ci>'+(c.ok?(c.ic||'✔'):'✘')+'</span><div><div class=cl>'+esc(c.l)+'</div><div class=cv><b>'+fmt(c.x)+'</b>'+(c.ok?'':' <span class=vs>vs '+(c.vl||'')+'</span> <b>'+fmt(c.y)+'</b> <span class=dd>· diff '+dd(c.x-c.y)+'</span>')+'</div>'+(c.note?'<div class=nt>'+esc(c.note)+'</div>':'')+'</div></div>';
+ $('cks').innerHTML='<div class="cs '+(bad?'bad':'good')+'"><div class=big>'+(bad?'✘ '+bad+' mismatch'+(bad>1?'es':'')+' to review':'✔ All checks passed')+'</div><div class=sub>'+(tot-bad)+' of '+tot+' checks agree · Year '+Y+' · click a card to open the sheet</div><label class=of><input type=checkbox id=ckf'+(onlyBad?' checked':'')+'> Show mismatches only</label></div>';
+ let h=Gs.map(([t,a])=>{const l=(onlyBad?a.filter(c=>!c.ok):a).slice().sort((p,q)=>p.ok===q.ok?0:p.ok?1:-1);return l.length?'<h3>'+esc(t)+' ('+l.length+')</h3><div class=cg>'+l.map(card).join('')+'</div>':''}).join('');
+ if(!h)h='<p style="color:var(--mut);margin-top:20px">No mismatches.</p>';
+ $('chk').innerHTML=h;
+ const n=$('ckn');if(n){n.textContent=bad?bad:'✔';n.className='bd'+(bad?' x':'')}}
+document.addEventListener('change',e=>{if(e.target.id==='ckf'){onlyBad=e.target.checked;checks()}});
+document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest('.ck[data-go]');if(c)go(+c.dataset.go)});
 function st(t){$('st').textContent=t}
 function hdr(){$('yl').textContent=Y;document.title='TFHS Audit Report '+Y;$('yr').value=Y;$('cp').hidden=Y!=="2025-26";$('cp').textContent=cmp?'Hide 2024-25 figures':'Compare with 2024-25';
  $('lg').hidden=Y!=="2025-26";$('fx').hidden=Y!=="2025-26"}
@@ -126,7 +172,7 @@ $('sv').onclick=async()=>{try{const o={payload:JSON.stringify(D),updatedAt:fireb
 $('ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D)],{type:'application/json'}));a.download='tfhs_audit_'+Y.replace('-','_')+'.json';a.click()};
 $('cf').onclick=()=>ask('Firebase config (this browser only)',[['apiKey','apiKey'],['authDomain','authDomain'],['projectId','projectId'],['appId','appId']],v=>{localStorage.fbcfg=JSON.stringify(v);location.reload()});
 window.onbeforeunload=e=>Object.values(dirty).some(Boolean)?(e.preventDefault(),''):undefined;
-$('nav').innerHTML=D.map((s,i)=>'<button onclick="show('+i+')">'+esc(s.n)+'</button>').join('');
+$('nav').innerHTML=D.map((s,i)=>'<button onclick="go('+i+')">'+esc(s.n)+'</button>').join('')+'<button id="ckb" onclick="go('+D.length+')">Checks <span id="ckn" class="bd"></span></button>';
 const cfg=FB_FILE.apiKey?FB_FILE:JSON.parse(localStorage.fbcfg||'null');
 if(cfg&&cfg.apiKey){firebase.initializeApp(cfg);auth=firebase.auth();db=firebase.firestore();
  auth.onAuthStateChanged(u=>{user=u;if(!u)edit=false;show(cur);ui()});
@@ -263,13 +309,16 @@ async function fetchAll(){
 $('fx').onclick=fetchAll;
 
 /* ===== Print: fit every sheet on one A4 page (portrait / landscape / auto) ===== */
-function doPrint(){const om=$('or').value,one=$('ps').value==='one';document.body.classList.add('pm');
+function doPrint(){const om=$('or').value,one=$('ps').value==='one'&&cur<D.length;
+ document.body.classList.add('pm');document.body.classList.remove('ckm');
  document.querySelectorAll('.sheet').forEach((sec,j)=>{if(!sec.querySelector('table'))sec.insertAdjacentHTML('beforeend',tbl(j));
   if(one&&j!=cur)sec.setAttribute('data-skip','1');else sec.removeAttribute('data-skip');
-  const t=sec.querySelector('table');t.style.zoom=1;const w=t.offsetWidth,h=t.offsetHeight+34,
-   sc=(W,H)=>Math.min(1,W/w,H/h),P=sc(733,1000),L=sc(1062,690);
-  const o=om==='p'?'p':om==='l'?'l':(L>P*1.02?'l':'p');
-  sec.style.page=o==='l'?'land':'port';t.style.zoom=(o==='l'?L:P)*.98});
+  const t=sec.querySelector('table');t.style.zoom=1;const w=t.offsetWidth,h=t.offsetHeight;
+  /* fit to page WIDTH (keeps text readable); long sheets continue on the next page(s); only a small overflow is squeezed onto one page */
+  const plan=(W,H)=>{const sw=Math.min(1.1,W/w),hh=h*sw;let s=sw,pg=Math.max(1,Math.ceil(hh/H-.03));if(hh<=H)pg=1;else if(hh<=H*1.15){s=H/h;pg=1}return{s,pg}};
+  const P=plan(733,1040),L=plan(1062,715);
+  const o=om==='p'?'p':om==='l'?'l':(P.s<.8&&L.s>P.s*1.15?'l':'p'),r=o==='l'?L:P;
+  sec.style.page=o==='l'?'land':'port';sec.style.breakInside=r.pg>1?'auto':'avoid';t.style.zoom=r.s*.97});
  setTimeout(()=>print(),50)}
 $('pb').onclick=doPrint;
 window.onafterprint=()=>{document.body.classList.remove('pm');show(cur)};
