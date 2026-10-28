@@ -167,8 +167,9 @@ $('li').onclick=()=>ask('Sign in to edit',[['e','Email','email'],['p','Password'
 $('ed').onclick=()=>{edit=!edit;show(cur);ui()};
 $('cp').onclick=()=>{cmp=!cmp;hdr();show(cur)};
 $('yr').onchange=()=>{Y=$('yr').value;D=DATA[Y];edit=false;location.hash=Y;hdr();show(cur);checks();ui();st(dirty[Y]?'Unsaved changes':(db?'':'Local copy'))};
-$('sv').onclick=async()=>{try{const o={payload:JSON.stringify(D),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),by:user.email};if(Y==="2025-26"){o.overrides=[...OV];o.defaults=[...DF];o.fetched=[...FT]}
- await db.doc(PATH[Y]).set(o);dirty[Y]=false;st('Saved online '+new Date().toLocaleTimeString())}catch(x){alert('Save failed: '+x.message)}};
+async function saveOnline(auto){if(!db||!user){return false}try{const o={payload:JSON.stringify(D),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),by:user.email};if(Y==="2025-26"){o.overrides=[...OV];o.defaults=[...DF];o.fetched=[...FT]}
+ await db.doc(PATH[Y]).set(o);dirty[Y]=false;st((auto?'Fetched and saved online ':'Saved online ')+new Date().toLocaleTimeString());return true}catch(x){alert('Save failed: '+x.message);return false}}
+$('sv').onclick=()=>saveOnline(false);
 $('ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D)],{type:'application/json'}));a.download='tfhs_audit_'+Y.replace('-','_')+'.json';a.click()};
 $('cf').onclick=()=>ask('Firebase config (this browser only)',[['apiKey','apiKey'],['authDomain','authDomain'],['projectId','projectId'],['appId','appId']],v=>{localStorage.fbcfg=JSON.stringify(v);location.reload()});
 window.onbeforeunload=e=>Object.values(dirty).some(Boolean)?(e.preventDefault(),''):undefined;
@@ -304,7 +305,8 @@ async function fetchAll(){
  const vb=(pb.voc_bank||[]).filter(e=>upto(e.date)).reduce((s,e)=>s+num(e.received)-num(e.payment),0);
  rep.unshift('Salary grant ₹'+fmt(G1)+' · salaries ₹'+fmt(get(4,43,10))+' · PF deposits ₹'+fmt(pfd)+' · '+Object.keys(E).length+' staff found');
  if(vb)rep.push('Vocational pass book closing ₹'+fmt(vb)+' has no line in Form 8/9 — add manually if needed');
- dirty[Y]=true;D=DATA[Y];show(cur);checks();hdr();st('Fetched — unsaved (blue = fetched, purple = default from 2024-25)');
+ dirty[Y]=true;D=DATA[Y];show(cur);checks();hdr();st('Fetched — saving online…');
+ if(await saveOnline(true))rep.unshift('Saved online automatically to '+PATH[Y]);else{st('Fetched — NOT saved (sign in, then press Save online)');rep.unshift('Not saved online: sign in and press Save online')}
  $('dt').textContent='Fetch report';$('df').innerHTML='<ul style="max-width:560px;max-height:55vh;overflow:auto;font-size:13px;padding-left:18px">'+rep.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';$('dl').onclose=null;$('dl').showModal()}
 $('fx').onclick=fetchAll;
 
