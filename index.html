@@ -63,15 +63,47 @@ main{max-width:1500px;margin:18px auto 40px;padding:0 14px}
 @media print{header,nav,#ckp,#hint,#lg{display:none!important}
  #out .sheet{width:auto!important;max-width:none!important;box-shadow:none!important;border:0!important;border-radius:0!important;padding:0!important;margin:0!important}
  #out .sheet h2{display:none}tr{break-inside:avoid}}
+
+/* ===== v3: boxed ledger sheets, proper borders, always-on Save, auto-calc flash ===== */
+:root{--hd:color-mix(in srgb,var(--acc) 10%,var(--paper));--tt:color-mix(in srgb,var(--acc) 7%,var(--paper))}
+button{transition:border-color .12s,background .12s}button:hover{border-color:var(--acc)}
+button:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+button.p:hover{filter:brightness(1.08)}
+#sv{position:relative;font-weight:600}
+#sv.dirty{background:var(--ok);border-color:var(--ok);color:#fff}
+#sv.dirty::after{content:"";position:absolute;top:-4px;right:-4px;width:10px;height:10px;border-radius:50%;background:var(--bad);border:2px solid var(--paper)}
+#sv:disabled{opacity:.6;cursor:wait}
+#tt{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:60;max-width:90vw}#tt.on{opacity:1}
+#out .sheet{border-top:4px solid var(--acc);border-radius:6px}
+#out .sheet h2{font:600 13px "Source Sans 3",system-ui,sans-serif;letter-spacing:.06em;color:var(--acc);display:flex;align-items:center;gap:8px}
+#out .sheet h2::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--acc)}
+#out table.box{border:2px solid var(--acc);background:var(--paper)}
+#out table.box td{border:1px solid var(--rule);padding:3px 6px;line-height:1.35}
+#out table.box td.h{background:var(--hd);font-weight:600;text-align:center;border-color:color-mix(in srgb,var(--acc) 30%,var(--rule))}
+#out table.box tr.tt td{background:var(--tt);font-weight:600;border-top:1.5px solid var(--acc)}
+#out table.box td.n{border-bottom:1px solid var(--rule)}
+#out table.box td.z{color:var(--mut)}
+#out table.cov{border:0}#out table.cov td{border:0;text-align:center;font:600 19px "Source Serif 4",Georgia,serif;padding:6px 4px;line-height:1.4}
+#out .sheet.cv{border:3px double var(--acc);border-top:3px double var(--acc);padding:44px 38px}
+#out table.box td.lk{background:rgba(27,127,92,.16)}#out table.box td.ft{background:rgba(2,132,199,.16)}#out table.box td.df{background:rgba(124,58,237,.18)}#out table.box td.ov{background:rgba(214,140,0,.22)}
+#out.ed table.box td[contenteditable]{background:var(--edit);outline:1px dashed var(--rule);outline-offset:-2px}
+#out.ed table.box td[contenteditable]:focus{outline:2px solid var(--acc)}
+@keyframes au{from{background-color:#ffc83d}}
+#out td.au{animation:au 1.3s ease-out}
+@media(prefers-reduced-motion:reduce){#out td.au{animation:none}#tt{transition:none}}
+@media print{:root{--paper:#fff;--ink:#000;--rule:#8a8a8a;--acc:#1f4e79;--mut:#444;--desk:#fff;--edit:#fff}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}#tt{display:none!important}
+ #out .sheet.cv{border:3px double #1f4e79!important;padding:36px!important}#out .sheet{border-radius:0!important}
+ #out table.box{border:1.6px solid #1f4e79}#out table.box td{border-color:#8a8a8a}}
 </style></head><body>
 <header><div class="hr"><h1>Taldangra Fulmati High School (H.S) · Audit Report <span id="yl"></span></h1><select id="yr" aria-label="Report year"><option>2024-25</option><option>2025-26</option></select><span id="st"></span></div>
-<div class="hr"><button id="li" hidden>Sign in</button><button id="lo" hidden>Sign out</button><button id="ed" hidden>Edit</button><button id="sv" class="p" hidden>Save online</button><button id="fx" class="p" hidden>Fetch 2025-26 data</button><button id="cp" hidden>Compare with 2024-25</button><span class="sp"></span>
+<div class="hr"><button id="li" hidden>Sign in</button><button id="lo" hidden>Sign out</button><button id="ed" hidden>Edit</button><button id="sv" title="Save the current figures online (Ctrl+S)">Save</button><button id="fx" class="p" hidden>Fetch 2025-26 data</button><button id="cp" hidden>Compare with 2024-25</button><span class="sp"></span>
 <label class="g gz">View <select id="zm" title="Screen zoom"><option value="fit">Fit width</option><option value="1">100%</option><option value="1.25">125%</option><option value="1.5">150%</option></select></label>
 <span class="g">Print <select id="or" title="Print orientation"><option value="auto">Auto A4 (best fit)</option><option value="p">A4 Portrait</option><option value="l">A4 Landscape</option></select><select id="ps" title="What to print"><option value="all">All sheets</option><option value="one">This sheet only</option></select><button id="pb" class="p">Print</button></span>
 <span class="g"><button id="ex">Export JSON</button><button id="cf">Firebase setup</button></span></div></header>
 <nav id="nav"></nav>
 <main><div id="ckp"><div id="cks"></div><div id="chk"></div></div><p id="hint" style="color:var(--mut);font-size:13px"></p><p id="lg" hidden>Cell colours in 2025-26:<i style="background:rgba(27,127,92,.3)"></i>linked from 2024-25 (locked; double-click in Edit mode to override)<i style="background:rgba(214,140,0,.4)"></i>manually overridden<i style="background:rgba(2,132,199,.35)"></i>fetched from Salary / PF / Cash portals<i style="background:rgba(124,58,237,.35)"></i>default copied from 2024-25 (other entries: confirm or edit)<br>Opening balances, previous-year figures and PF opening balances are linked. Totals and all current-year amounts are entered manually; the Checks tab flags any mismatch.</p><div id="out"></div></main>
-<dialog id="dl"><form method="dialog" id="fm"><b id="dt"></b><div id="df"></div><button class="p">OK</button> <button value="x" formnovalidate>Cancel</button></form></dialog>
+<div id="tt" role="status" aria-live="polite"></div><dialog id="dl"><form method="dialog" id="fm"><b id="dt"></b><div id="df"></div><button class="p">OK</button> <button value="x" formnovalidate>Cancel</button></form></dialog>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -109,14 +141,14 @@ applyLinks();
 const fmt=v=>typeof v!=='number'?v:(v>0&&v<1?+(v*100).toFixed(2)+'%':v.toLocaleString('en-IN',{maximumFractionDigits:2}));
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
 const prev=(s,r,c)=>{const x=DATA["2024-25"][s].r[r];return x&&typeof x[c]==='number'?x[c]:undefined};
-function tbl(si){const s=D[si],mg={},sk=new Set();
+function tbl(si){const s=D[si],mg={},sk=new Set();let fn=s.nr;for(let r=0;r<s.nr&&fn===s.nr;r++){const o=s.r[r]||{};for(const k in o)if(typeof o[k]==='number'){fn=r;break}}const hb=si>0&&fn<=9?fn:0;
  s.m.forEach(([a,b,c,d])=>{mg[a+','+c]=[b-a,d-c];for(let r=a;r<b;r++)for(let k=c;k<d;k++)if(r!=a||k!=c)sk.add(r+','+k)});
- let h='<table style="width:'+s.w.reduce((x,y)=>x+y,0)+'px"><colgroup>'+s.w.map(w=>'<col style="width:'+w+'px">').join('')+'</colgroup>';
- for(let r=0;r<s.nr;r++){const row=s.r[r]||{};h+='<tr>';
+ let h='<table class="'+(si===0?'cov':'box')+'" style="width:'+s.w.reduce((x,y)=>x+y,0)+'px"><colgroup>'+s.w.map(w=>'<col style="width:'+w+'px">').join('')+'</colgroup>';
+ for(let r=0;r<s.nr;r++){const row=s.r[r]||{};const isT=si>0&&Object.keys(row).some(k=>typeof row[k]==='string'&&/\btotal\b/i.test(row[k]));h+='<tr'+(isT?' class=tt':'')+'>';
   for(let c=0;c<s.nc;c++){if(sk.has(r+','+c))continue;const v=row[c],m=mg[r+','+c];let cs=m?m[1]:1,rs=m?m[0]:1;
    if(!m&&typeof v==='string')while(c+cs<s.nc&&row[c+cs]===undefined&&!sk.has(r+','+(c+cs))&&!mg[r+','+(c+cs)])cs++;
    const num=typeof v==='number',lk=num&&linked(si,r,c),ov=lk&&OV.has(key(si,r,c)),locked=lk&&!ov;
-   let cls=(num?'n ':'')+(locked?'lk':ov?'ov':''),ttl='',extra='';
+   let cls=(num?'n ':'')+(num&&v===0?'z ':'')+(!num&&r<hb&&typeof v==='string'?'h ':'')+(locked?'lk':ov?'ov':''),ttl='',extra='';
    if(locked)ttl='Linked from 2024-25 — '+lk[0]+(edit?' (double-click to override)':'');
    else if(ov)ttl='Manually overridden (double-click to restore the link)';
    else if(num&&Y==="2025-26"){const p=prev(si,r,c);if(p!==undefined){ttl='2024-25: '+fmt(p);if(cmp&&!edit)extra='<span class=pv>2024-25: '+esc(fmt(p))+'</span>'}}
@@ -126,7 +158,7 @@ function tbl(si){const s=D[si],mg={},sk=new Set();
   h+='</tr>';}
  return h+'</table>'}
 function show(i){cur=i;const ck=i>=D.length;document.body.classList.toggle('ckm',ck);[...$('nav').children].forEach((b,j)=>b.classList.toggle('on',j==i));
- $('out').className=edit?'ed':'';$('out').innerHTML=D.map((s,j)=>'<section class=sheet data-i='+j+(j==i&&!ck?'':' style="display:none"')+'><h2>'+esc(s.n)+'</h2>'+(j==i&&!ck||matchMedia('print').matches?tbl(j):'')+'</section>').join('');fit()}
+ $('out').className=edit?'ed':'';$('out').innerHTML=D.map((s,j)=>'<section class="sheet'+(j===0?' cv':'')+'" data-i='+j+(j==i&&!ck?'':' style="display:none"')+'><h2>'+esc(s.n)+'</h2>'+(j==i&&!ck||matchMedia('print').matches?tbl(j):'')+'</section>').join('');fit()}
 function go(i){show(i);if(window.scrollY>0)window.scrollTo(0,0)}
 function fit(){const t=document.querySelector('#out .sheet:not([style*="display"]) table');if(!t)return;t.style.zoom=1;const z=$('zm').value;
  if(z==='fit'){const w=t.offsetWidth,a=$('out').clientWidth-68;t.style.zoom=Math.max(.55,Math.min(1.25,a/w))}else t.style.zoom=+z}
@@ -150,27 +182,34 @@ document.addEventListener('click',e=>{const c=e.target.closest&&e.target.closest
 function st(t){$('st').textContent=t}
 function hdr(){$('yl').textContent=Y;document.title='TFHS Audit Report '+Y;$('yr').value=Y;$('cp').hidden=Y!=="2025-26";$('cp').textContent=cmp?'Hide 2024-25 figures':'Compare with 2024-25';
  $('lg').hidden=Y!=="2025-26";$('fx').hidden=Y!=="2025-26"}
-function ui(){$('ed').hidden=!(user||!db);$('ed').textContent=edit?'Stop editing':'Edit';$('li').hidden=!db||!!user;$('lo').hidden=!(db&&user);$('lo').textContent='Sign out ('+(user&&user.email||'')+')';$('li').textContent='Sign in';$('sv').hidden=!(db&&user&&edit);
+function ui(){$('ed').hidden=!(user||!db);$('ed').textContent=edit?'Stop editing':'Edit';$('li').hidden=!db||!!user;$('lo').hidden=!(db&&user);$('lo').textContent='Sign out ('+(user&&user.email||'')+')';$('li').textContent='Sign in';svui();
  $('hint').textContent=db?(user?'Signed in as '+user.email:'Read-only view. Sign in to edit and save.'):'Firebase not configured: edits stay in this browser. Use Firebase setup, or paste your config into FB_FILE.'}
 document.addEventListener('input',e=>{const t=e.target;if(!t.dataset||t.dataset.r===undefined)return;const R=t.dataset.r,C=t.dataset.c;if(linked(cur,R,C)&&!OV.has(key(cur,R,C)))return;
- const o=D[cur].r[R][C];let v=t.textContent;
+ const o=D[cur].r[R][C],pre=Y==="2025-26"?snap():null;let v=t.textContent;
  if(typeof o==='number'){const p=v.includes('%');v=parseFloat(v.replace(/[,%\s]/g,''));if(isNaN(v))return;if(p)v/=100}
- D[cur].r[R][C]=v;FT.delete(key(cur,R,C));DF.delete(key(cur,R,C));dirty[Y]=true;st('Unsaved changes');checks()});
-document.addEventListener('focusout',e=>{const t=e.target;if(t.dataset&&t.dataset.r!==undefined)t.textContent=fmt(D[cur].r[t.dataset.r][t.dataset.c])});
+ D[cur].r[R][C]=v;FT.delete(key(cur,R,C));DF.delete(key(cur,R,C));dirty[Y]=true;st('Unsaved changes');
+ if(pre){propagate(pre);refresh(true)}svui();checks()});
+document.addEventListener('focusout',e=>{const t=e.target;if(t.dataset&&t.dataset.r!==undefined){t.textContent=fmt(D[cur].r[t.dataset.r][t.dataset.c]);t.classList.toggle('z',D[cur].r[t.dataset.r][t.dataset.c]===0)}});
 document.addEventListener('dblclick',e=>{const t=e.target.closest&&e.target.closest('td');if(!t||!edit||t.dataset.r===undefined)return;const k=key(cur,t.dataset.r,t.dataset.c);if(!linked(cur,t.dataset.r,t.dataset.c))return;
  if(OV.has(k)){if(!confirm('Restore the link to the 2024-25 value for this cell?'))return;OV.delete(k);applyLinks()}
  else{if(!confirm('Override this linked cell with a manually typed value?'))return;OV.add(k)}
- dirty[Y]=true;st('Unsaved changes');show(cur);checks()});
+ dirty[Y]=true;st('Unsaved changes');if(Y==="2025-26"){recalc()}show(cur);svui();checks()});
 function ask(title,fields,ok){$('dt').textContent=title;$('df').innerHTML=fields.map(f=>'<input id="f_'+f[0]+'" placeholder="'+f[1]+'" type="'+(f[2]||'text')+'">').join('');
  $('dl').onclose=()=>{if($('dl').returnValue!=='x')ok(Object.fromEntries(fields.map(f=>[f[0],$('f_'+f[0]).value])))};$('dl').showModal()}
 $('li').onclick=()=>ask('Sign in to edit',[['e','Email','email'],['p','Password','password']],v=>auth.signInWithEmailAndPassword(v.e,v.p).catch(x=>alert(x.message)));
 $('lo').onclick=()=>auth.signOut();
 $('ed').onclick=()=>{edit=!edit;show(cur);ui()};
 $('cp').onclick=()=>{cmp=!cmp;hdr();show(cur)};
-$('yr').onchange=()=>{Y=$('yr').value;D=DATA[Y];edit=false;location.hash=Y;hdr();show(cur);checks();ui();st(dirty[Y]?'Unsaved changes':(db?'':'Local copy'))};
+$('yr').onchange=()=>{Y=$('yr').value;D=DATA[Y];edit=false;location.hash=Y;hdr();show(cur);checks();ui();st(dirty[Y]?'Unsaved changes':(db?'':'Local copy'));svui()};
 async function saveOnline(auto){if(!db||!user){return false}try{const o={payload:JSON.stringify(D),updatedAt:firebase.firestore.FieldValue.serverTimestamp(),by:user.email};if(Y==="2025-26"){o.overrides=[...OV];o.defaults=[...DF];o.fetched=[...FT]}
- await db.doc(PATH[Y]).set(o);dirty[Y]=false;st((auto?'Fetched and saved online ':'Saved online ')+new Date().toLocaleTimeString());return true}catch(x){alert('Save failed: '+x.message);return false}}
-$('sv').onclick=()=>saveOnline(false);
+ await db.doc(PATH[Y]).set(o);dirty[Y]=false;st((auto?'Fetched and saved online ':'Saved online ')+new Date().toLocaleTimeString());svui();toast('Saved online · '+Y);return true}catch(x){alert('Save failed: '+x.message);return false}}
+function saveLocal(){try{const o={payload:JSON.stringify(D),at:Date.now()};if(Y==="2025-26"){o.overrides=[...OV];o.defaults=[...DF];o.fetched=[...FT]}localStorage['tfhs_audit_'+Y]=JSON.stringify(o);dirty[Y]=false;st('Saved in this browser '+new Date().toLocaleTimeString());svui();toast('Saved in this browser · '+Y);return true}catch(x){alert('Local save failed: '+x.message);return false}}
+async function saveNow(){const b=$('sv');
+ if(!db){return saveLocal()}
+ if(!user){ask('Sign in to save online',[['e','Email','email'],['p','Password','password']],v=>auth.signInWithEmailAndPassword(v.e,v.p).then(()=>saveOnline(false)).catch(x=>alert(x.message)));return false}
+ b.disabled=true;try{return await saveOnline(false)}finally{b.disabled=false}}
+$('sv').onclick=saveNow;
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();saveNow()}});
 $('ex').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(D)],{type:'application/json'}));a.download='tfhs_audit_'+Y.replace('-','_')+'.json';a.click()};
 $('cf').onclick=()=>ask('Firebase config (this browser only)',[['apiKey','apiKey'],['authDomain','authDomain'],['projectId','projectId'],['appId','appId']],v=>{localStorage.fbcfg=JSON.stringify(v);location.reload()});
 window.onbeforeunload=e=>Object.values(dirty).some(Boolean)?(e.preventDefault(),''):undefined;
@@ -181,7 +220,49 @@ if(cfg&&cfg.apiKey){firebase.initializeApp(cfg);auth=firebase.auth();db=firebase
  YEARS.forEach(y=>db.doc(PATH[y]).onSnapshot(s=>{
   if(s.exists){if(!dirty[y]){const d=s.data();DATA[y]=JSON.parse(d.payload);if(y==="2025-26"){OV=new Set(d.overrides||[]);DF.clear();FT.clear();(d.defaults||[]).forEach(x=>DF.add(x));(d.fetched||[]).forEach(x=>FT.add(x))}applyLinks();D=DATA[Y];show(cur);checks();if(y===Y)st('Online copy loaded')}}
   else if(y===Y)st('No online copy of '+y+' yet: sign in, edit and save to create it')},e=>st('Cannot read online copy: '+e.code)))}
-else st('Local copy');
+else{st('Local copy');YEARS.forEach(y=>{try{const o=JSON.parse(localStorage['tfhs_audit_'+y]||'null');if(o&&o.payload){DATA[y]=JSON.parse(o.payload);if(y==="2025-26"){OV=new Set(o.overrides||[]);(o.defaults||[]).forEach(x=>DF.add(x));(o.fetched||[]).forEach(x=>FT.add(x))}}}catch(e){}});D=DATA[Y];applyLinks();show(cur)}
+
+/* ===== Auto-calculation after any edit =====
+ FOLLOW: [target, [sources]] — a target that equals its source(s) stays equal (default "same") when the source changes;
+ once a target has been made different by hand it is left alone. Cell = [sheet,row,col]. */
+const FOLLOW=(()=>{const R=[],a=(t,s)=>R.push([t,s]);
+ /* Form 5A / Form 6 totals -> Form 3&4 receipts (deductions) and payments (deposits) */
+ a([4,73,2],[[6,52,18]]);a([4,78,8],[[6,52,18]]);       /* Professional tax */
+ a([4,74,2],[[6,52,17]]);a([4,79,8],[[6,52,17]]);       /* Income tax */
+ a([4,70,2],[[8,69,6]]);                                /* PF contribution received (deducted) */
+ a([4,72,8],[[8,54,6]]);a([4,73,8],[[8,59,6]]);a([4,74,8],[[8,65,6]]); /* PF deposited: teachers / clerks / Gr-D */
+ a([4,72,2],[[8,69,10]]);a([4,77,8],[[8,69,10]]);       /* PF withdrawals */
+ a([4,76,2],[[8,69,5]]);a([4,81,8],[[8,69,5]]);         /* PF transfer in / out */
+ /* deduction (receipt) side -> deposit (payment) side: editing the receipt carries over to the payment while they are equal; editing the payment alone makes it differ */
+ a([4,78,8],[[4,73,2]]);a([4,79,8],[[4,74,2]]);a([4,77,8],[[4,72,2]]);a([4,81,8],[[4,76,2]]);
+ a([4,70,2],[[4,72,8],[4,73,8],[4,74,8]]);
+ /* salaries etc. from Form 5A */
+ [[10,39],[17,44],[24,50]].forEach(([r0,t])=>[[0,9],[1,11],[2,13],[3,14]].forEach(([d,c])=>a([4,r0+d,8],[[6,t,c]])));
+ a([4,30,8],[[6,52,19]]);a([4,32,8],[[6,52,12]]);
+ /* Form 3&4 -> Form 1 / Form 2 */
+ a([1,48,3],[[4,6,2]]);a([2,35,4],[[4,6,2]]);a([2,37,4],[[4,28,2]]);a([2,39,4],[[4,43,10]]);a([2,40,4],[[4,80,8]]);a([2,45,4],[[4,89,8]]);
+ /* Form 8 closing balances -> Form 9 */
+ [[16,69],[18,26],[21,11],[23,43]].forEach(([r,f])=>{a([11,r,2],[[10,f,8]]);a([11,r,5],[[10,f,8]])});
+ a([11,7,2],[[4,89,8]]);a([11,7,5],[[4,89,8]]);
+ return R})();
+const FK=c=>key(c[0],c[1],c[2]),gv=c=>get(c[0],c[1],c[2]);
+const FCELLS=(()=>{const m={};FOLLOW.forEach(([t,s])=>[t,...s].forEach(c=>m[FK(c)]=c));return Object.values(m)})();
+const snap=()=>{const o={};FCELLS.forEach(c=>o[FK(c)]=gv(c));return o};
+const same=(a,b)=>Math.abs(a-b)<.005;
+function propagate(prev){let moved=false;
+ for(let i=0;i<5;i++){recalc();const cur=snap();let ch=false;
+  FOLLOW.forEach(([t,s])=>{const sv=s.reduce((x,c)=>x+cur[FK(c)],0),sp=s.reduce((x,c)=>x+prev[FK(c)],0),tk=FK(t);
+   if(!same(sv,sp)&&same(prev[tk],sp)&&!same(cur[tk],sv)&&!(LK[tk]&&!OV.has(tk))){setv(t[0],t[1],t[2],Math.round(sv*100)/100);cur[tk]=sv;ch=true;moved=true}});
+  if(!ch)break;prev=snap_prev(cur)}
+ recalc();return moved}
+const snap_prev=c=>Object.assign({},c);
+function refresh(flash){const a=document.activeElement,rs=D[cur]&&D[cur].r;if(!rs)return;
+ document.querySelectorAll('#out .sheet:not([style*="display"]) td[data-r]').forEach(t=>{const o=rs[t.dataset.r],v=o&&o[t.dataset.c];if(typeof v!=='number')return;
+  const k=key(cur,t.dataset.r,t.dataset.c);t.classList.toggle('ft',FT.has(k));t.classList.toggle('df',DF.has(k));t.classList.toggle('z',v===0);
+  if(t!==a){const x=fmt(v);if(t.textContent!==x){t.textContent=x;if(flash){t.classList.remove('au');void t.offsetWidth;t.classList.add('au')}}}})}
+let tto;function toast(m){const e=$('tt');e.textContent=m;e.classList.add('on');clearTimeout(tto);tto=setTimeout(()=>e.classList.remove('on'),2600)}
+function svui(){const b=$('sv'),d=!!dirty[Y];b.classList.toggle('dirty',d);b.textContent=d?'Save changes':'Save';b.title=d?'Unsaved changes — click to save (Ctrl+S)':'Everything is saved — click to save again (Ctrl+S)'}
+
 /* ===== FY 2025-26: fetch from Salary / PF / Cash portals (same Firebase project) ===== */
 const M25=['March-2025','April-2025','May-2025','June-2025','July-2025','August-2025','September-2025','October-2025','November-2025','December-2025','January-2026','February-2026'];
 const MN=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -200,7 +281,7 @@ function salary(sal,rep){const mo=sal.months||{},cf=sal.configs||{},E={};
 const get=(si,r,c)=>{const x=DATA["2025-26"][si].r[r];return x&&typeof x[c]==='number'?x[c]:0};
 const pv=(si,r,c)=>{const x=DATA["2024-25"][si].r[r];return x&&typeof x[c]==='number'?x[c]:0};
 function setv(si,r,c,v,tag){const k=key(si,r,c);if(LK[k]&&!OV.has(k))return;const s=DATA["2025-26"][si];(s.r[r]=s.r[r]||{})[c]=v;FT.delete(k);DF.delete(k);if(tag==='f')FT.add(k);if(tag==='d')DF.add(k)}
-const S=(si,r,c,v)=>setv(si,r,c,Math.round(v*100)/100);
+const S=(si,r,c,v)=>{const k=key(si,r,c),f=FT.has(k),d=DF.has(k);setv(si,r,c,Math.round(v*100)/100);if(f)FT.add(k);if(d)DF.add(k)};
 const sum=(si,a,b,cs)=>{let t=0;for(let r=a;r<=b;r++)cs.forEach(c=>t+=get(si,r,c));return t};
 function recalc(){
  for(let c=1;c<=19;c++){S(6,39,c,sum(6,7,38,[c]));S(6,44,c,sum(6,41,43,[c]));S(6,50,c,sum(6,46,49,[c]));S(6,52,c,get(6,39,c)+get(6,44,c)+get(6,50,c))}
@@ -217,6 +298,8 @@ function recalc(){
  S(4,92,10,get(4,55,10)+get(4,69,10)+get(4,74,10)+get(4,81,10)+get(4,86,10)+get(4,90,10));
  [[14,6,12,5,9],[29,20,27,19,21],[46,34,44,34,42],[59,51,57,50,52],[72,64,70,63,65]].forEach(([t,a,b,c,d])=>{S(10,t,3,sum(10,a,b,[3]));S(10,t,8,sum(10,c,d,[8])+get(10,[11,26,43,56,69][[14,29,46,59,72].indexOf(t)],8))});
  S(11,25,2,sum(11,7,24,[2]));S(11,25,5,sum(11,7,24,[5]));
+ /* Form 3&4 -> Form 1 / Form 2 (salary account) */
+ S(2,37,5,get(2,34,4)+get(2,35,4)+get(2,37,4));S(2,40,5,get(2,39,4)+get(2,40,4));S(2,41,5,get(2,37,5)-get(2,40,5));S(2,43,5,get(2,41,5));
 }
 /* PF: same interest engine as the PF portal */
 function sim(r){const A=(a,f)=>Array.isArray(a)&&a.length===12?a:Array(12).fill(f);const dw=A(r.monthlyDepWithin,0),da=A(r.monthlyDepAfter,r.defaultDepAfter||0),wd=A(r.monthlyWd,0),ro=A(r.monthlyRoi,r.roi!==undefined?r.roi:7.1);
@@ -296,7 +379,7 @@ async function fetchAll(){
  setv(4,73,2,get(6,52,18),'f');setv(4,78,8,get(6,52,18),'f');setv(4,74,2,get(6,52,17),'f');setv(4,79,8,get(6,52,17),'f');setv(4,80,8,BC,'f');
  setv(4,88,8,0,'f');setv(4,89,8,SC,'f');setv(4,90,8,0,'f');
  recalc();
- setv(1,48,3,get(4,6,2),'f');setv(2,35,4,G1,'f');setv(2,37,4,I1,'f');S(2,37,5,get(2,34,4)+G1+I1);setv(2,39,4,get(4,43,10),'f');setv(2,40,4,BC,'f');S(2,40,5,get(2,39,4)+BC);S(2,41,5,get(2,37,5)-get(2,40,5));S(2,43,5,get(2,41,5));setv(2,45,4,SC,'f');
+ setv(1,48,3,get(4,6,2),'f');setv(2,35,4,G1,'f');setv(2,37,4,I1,'f');S(2,37,5,get(2,34,4)+G1+I1);setv(2,39,4,get(4,43,10),'f');setv(2,40,4,BC,'f');S(2,40,5,get(2,39,4)+BC);S(2,41,5,get(2,37,5)-get(2,40,5));S(2,43,5,get(2,41,5));setv(2,45,4,SC,'f');recalc();
  /* Reserve fund (no pass book in the cash portal): closing = opening, marked default */
  const ro=get(10,51,3);setv(10,56,7,0,'d');setv(10,56,8,ro,'d');setv(10,57,7,ro,'d');
  /* 6. Form 9 */
@@ -306,8 +389,8 @@ async function fetchAll(){
  const vb=(pb.voc_bank||[]).filter(e=>upto(e.date)).reduce((s,e)=>s+num(e.received)-num(e.payment),0);
  rep.unshift('Salary grant ₹'+fmt(G1)+' · salaries ₹'+fmt(get(4,43,10))+' · PF deposits ₹'+fmt(pfd)+' · '+Object.keys(E).length+' staff found');
  if(vb)rep.push('Vocational pass book closing ₹'+fmt(vb)+' has no line in Form 8/9 — add manually if needed');
- dirty[Y]=true;D=DATA[Y];show(cur);checks();hdr();st('Fetched — saving online…');
- if(await saveOnline(true))rep.unshift('Saved online automatically to '+PATH[Y]);else{st('Fetched — NOT saved (sign in, then press Save online)');rep.unshift('Not saved online: sign in and press Save online')}
+ dirty[Y]=true;D=DATA[Y];show(cur);checks();hdr();svui();st('Fetched — saving online…');
+ if(await saveOnline(true))rep.unshift('Saved online automatically to '+PATH[Y]);else{st('Fetched — NOT saved yet: press Save');rep.unshift('Not saved yet: press the Save button (top) to sign in and save these figures')}svui();
  $('dt').textContent='Fetch report';$('df').innerHTML='<ul style="max-width:560px;max-height:55vh;overflow:auto;font-size:13px;padding-left:18px">'+rep.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>';$('dl').onclose=null;$('dl').showModal()}
 $('fx').onclick=fetchAll;
 
